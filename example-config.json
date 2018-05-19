@@ -1,0 +1,26 @@
+{
+  "logFilePath": "/[PATH-TO-LOG-DIRECTORY]/marvin.log",
+  "watchPaths": [
+    "/[FIRST-PATH]",
+    "/[SECOND-PATH]"
+  ],
+  "recursion": true,
+  "watchEvents": {
+    "access": false,
+    "attrib": false,
+    "close": false,
+    "create": true,
+    "delete": true,
+    "modify": true,
+    "move": true,
+    "open": false,
+    "unmount": false
+  },
+  "mailgun": {
+    "enabled": true,
+    "apiKey": "[YOUR-MAILGUN-API-KEY]",
+    "domainName": "[YOUR-MAILGUN-DOMAIN]",
+    "emailAddress": "[YOUR-EMAIL-ADDRESS]",
+    "frequencyInMinutes": 10
+  }
+}
