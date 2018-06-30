@@ -26,6 +26,10 @@ git clone https://github.com/davidgsharpe7/marvin.git
 ```
 screen python3 marvin.py
 ```
+5) (optional) Set Marvin to run at system boot. Edit your crontab with `crontab -e` and add a line like this:
+```
+@reboot sleep 5; cd /path/to/marvin/; /usr/bin/screen -dm /usr/bin/python3 marvin.py
+```
 
 ### Set up Mailgun for email notifications (optional)
 
