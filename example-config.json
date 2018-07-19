@@ -21,11 +21,13 @@
     "mailgun": {
       "apiKey": "[YOUR-MAILGUN-API-KEY]",
       "domainName": "[YOUR-MAILGUN-DOMAIN]",
-      "emailAddress": "[YOUR-EMAIL-ADDRESS]"
+      "emailAddress": "[YOUR-EMAIL-ADDRESS]",
+      "enabled": true
     },
     "pushover": {
       "pushover_app_token": "[YOUR-PUSHOVER-APP-TOKEN]",
-      "pushover_user_key": "[YOUR-PUSHOVER-USER-KEY]"
+      "pushover_user_key": "[YOUR-PUSHOVER-USER-KEY]",
+      "enabled": true
     }
   }
 }
