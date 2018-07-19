@@ -17,7 +17,6 @@
     "unmount": false
   },
   "mailgun": {
-    "enabled": true,
     "apiKey": "[YOUR-MAILGUN-API-KEY]",
     "domainName": "[YOUR-MAILGUN-DOMAIN]",
     "emailAddress": "[YOUR-EMAIL-ADDRESS]",

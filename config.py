@@ -39,8 +39,11 @@ class Config:
 
             self.recursion = config["recursion"]
 
-            self.mailgun_api_key = config["mailgun"]["apiKey"]
-            self.mailgun_domain_name = config["mailgun"]["domainName"]
-            self.email_address = config["mailgun"]["emailAddress"]
-            self.mailgun_frequency = config["mailgun"]["frequencyInMinutes"]
-            self.mailgun_enabled = config["mailgun"]["enabled"]
+            if "mailgun" in config:
+                self.mailgun_api_key = config["mailgun"]["apiKey"]
+                self.mailgun_domain_name = config["mailgun"]["domainName"]
+                self.email_address = config["mailgun"]["emailAddress"]
+                self.mailgun_frequency = config["mailgun"]["frequencyInMinutes"]
+                self.mailgun_enabled = true
+            else:
+                self.mailgun_enabled = false
