@@ -39,11 +39,19 @@ class Config:
 
             self.recursion = config["recursion"]
 
-            if "mailgun" in config:
-                self.mailgun_api_key = config["mailgun"]["apiKey"]
-                self.mailgun_domain_name = config["mailgun"]["domainName"]
-                self.email_address = config["mailgun"]["emailAddress"]
-                self.mailgun_frequency = config["mailgun"]["frequencyInMinutes"]
-                self.mailgun_enabled = true
-            else:
-                self.mailgun_enabled = false
+            if "notifications" in config:
+                if "mailgun" in config["notifications"]:
+                    self.mailgun_api_key = config["notifications"]["mailgun"]["apiKey"]
+                    self.mailgun_domain_name = config["notifications"]["mailgun"]["domainName"]
+                    self.email_address = config["notifications"]["mailgun"]["emailAddress"]
+                    self.mailgun_frequency = config["notifications"]["mailgun"]["frequencyInMinutes"]
+                    self.mailgun_enabled = true
+                else:
+                    self.mailgun_enabled = false
+
+                if "pushover" in config["notifications"]:
+                    self.pushover_app_token = config["notifications"]["pushover"]["pushover_app_token"]
+                    self.pushover_user_key = config["notifications"]["pushover"]["pushover_user_key"]
+                    self.pushover_enabled = true
+                else:
+                    self.pushover_enabled = false
