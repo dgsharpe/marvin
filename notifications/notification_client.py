@@ -12,10 +12,9 @@ class NotificationClient:
                 # If the line isn't for sending a notification
                 log_lines = line + log_lines
             elif client_type not in line:
-                # If the client type is not in the line, don't include this
-                # line, but dont stop adding lines. This means sending an email
-                # won't include the log for sending a push notificaiton, but
-                # previous logs will be included
+                # If this log line is about a notification, but pertains
+                # to a different notification client than the current one,
+                # omit the line and continue.
                 pass
             else:
                 break
@@ -23,4 +22,4 @@ class NotificationClient:
         return log_lines
 
     def send_notification(self):
-        raise Exception("Send notification should not be called on NotificationClient")
+        raise Exception("send_notification method should not be called on NotificationClient, only on its inheriting classes")
