@@ -105,3 +105,8 @@ ENV/
 
 # Marvin Config
 config.json
+
+# Vagrant files
+Vagrantfile
+.vagrant/
+
