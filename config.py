@@ -45,6 +45,6 @@ class Config:
             self.mailgun_frequency = config["mailgun"]["frequencyInMinutes"]
             self.mailgun_enabled = config["mailgun"]["enabled"]
             self.mattermost_enabled = config["mattermost"]["enabled"]
-            self.mattermost_api_key = config["mattermost"]["API"]
-            self.mattermost_url = ["mattermost"]["URL"]
+            self.mattermost_api_key = config["mattermost"]["apiKey"]
+            self.mattermost_url = config["mattermost"]["URL"]
             self.mattermost_frequency = config["mattermost"]["frequencyInMinutes"]

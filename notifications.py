@@ -14,7 +14,7 @@ class Notifications(threading.Thread):
 
     def run(self):
         schedule.every(self.config.mailgun_frequency).minutes.do(self.send_email)
-	schedule.every(self.config.mattermost_frequency).minutes.do(self.send_mattermost)
+        schedule.every(self.config.mattermost_frequency).minutes.do(self.send_mattermost)
         while not self.stop_request.isSet():
             schedule.run_pending()
             time.sleep(1)
