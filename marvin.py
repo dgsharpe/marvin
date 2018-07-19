@@ -5,8 +5,8 @@ from config import Config
 from fileevent import FileEvent
 from filemonitor import FileMonitor
 from logger import Logger
-from notificationevent import NotificationEvent
-from notifications import Notifications
+from notifications.notificationevent import NotificationEvent
+from notifications.notifications import Notifications
 
 if __name__ == "__main__":
 
