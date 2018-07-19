@@ -22,5 +22,11 @@
     "domainName": "[YOUR-MAILGUN-DOMAIN]",
     "emailAddress": "[YOUR-EMAIL-ADDRESS]",
     "frequencyInMinutes": 10
+  },
+  "mattermost": {
+    "enabled": true,
+    "apiKey": "[YOUR-MATTERMOST-API-KEY]",
+    "URL": "[YOUR-MATTERMOST_URL with HTTP/S]",
+    "frequencyInMinutes": 10
   }
 }
