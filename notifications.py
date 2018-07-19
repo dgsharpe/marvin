@@ -21,13 +21,13 @@ class Notifications(threading.Thread):
             time.sleep(1)
 
     def send_notification(self):
-        email_lines = log_lines_since("Notification email sent")
+        email_lines = self.log_lines_since("Notification email sent")
         if email_lines and self.config.mailgun_enabled:
-            send_email(email_lines)
+            self.send_email(email_lines)
 
-        pushover_lines = log_lines_since("Pushover notification sent")
+        pushover_lines = self.log_lines_since("Pushover notification sent")
         if pushover_lines and self.config.pushover_enabled:
-            send_pushover(pushover_lines)
+            self.send_pushover(pushover_lines)
 
     def log_lines_since(self, log_message):
         log_lines = ""
