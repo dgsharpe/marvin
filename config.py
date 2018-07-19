@@ -40,11 +40,11 @@ class Config:
             self.recursion = config["recursion"]
 
             if "notifications" in config:
+                self.notifications_frequency = config["notifications"]["frequencyInMinutes"]
                 if "mailgun" in config["notifications"]:
                     self.mailgun_api_key = config["notifications"]["mailgun"]["apiKey"]
                     self.mailgun_domain_name = config["notifications"]["mailgun"]["domainName"]
                     self.email_address = config["notifications"]["mailgun"]["emailAddress"]
-                    self.mailgun_frequency = config["notifications"]["mailgun"]["frequencyInMinutes"]
                     self.mailgun_enabled = True
                 else:
                     self.mailgun_enabled = False
