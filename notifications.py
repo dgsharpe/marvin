@@ -47,7 +47,13 @@ class Notifications(threading.Thread):
             "user": self.config.pushover_user_key,
             "message": log_lines,
           }), { "Content-type": "application/x-www-form-urlencoded" })
-        conn.getresponse()
+        if conn.getresponse().status == 200:
+            success_event = notificationevent.NotificationEventType.PUSHOVER_SENT
+            self.eventQueue.put(notificationevent.NotificationEvent(success_event))
+        else:
+            fail_event = notificationevent.NotificationEventType.PUSHOVER_FAILURE
+            self.eventQueue.put(notificationevent.NotificationEvent(fail_event))
+
 
     def send_email(self, log_lines):
         post_result = requests.post(
