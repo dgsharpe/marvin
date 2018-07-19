@@ -45,13 +45,13 @@ class Config:
                     self.mailgun_domain_name = config["notifications"]["mailgun"]["domainName"]
                     self.email_address = config["notifications"]["mailgun"]["emailAddress"]
                     self.mailgun_frequency = config["notifications"]["mailgun"]["frequencyInMinutes"]
-                    self.mailgun_enabled = true
+                    self.mailgun_enabled = True
                 else:
-                    self.mailgun_enabled = false
+                    self.mailgun_enabled = False
 
                 if "pushover" in config["notifications"]:
                     self.pushover_app_token = config["notifications"]["pushover"]["pushover_app_token"]
                     self.pushover_user_key = config["notifications"]["pushover"]["pushover_user_key"]
-                    self.pushover_enabled = true
+                    self.pushover_enabled = True
                 else:
-                    self.pushover_enabled = false
+                    self.pushover_enabled = False
