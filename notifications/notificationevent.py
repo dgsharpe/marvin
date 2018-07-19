@@ -10,5 +10,6 @@ class NotificationEventType(Enum):
 
 class NotificationEvent:
 
-    def __init__(self, event_type):
+    def __init__(self, event_type, event_message):
         self.eventType = event_type
+        self.eventMessage = event_message

@@ -2,7 +2,6 @@ import logging
 import logging.handlers
 
 from inotify_simple import flags
-from notificationevent import NotificationEventType
 
 
 class Logger:
@@ -45,11 +44,4 @@ class Logger:
                 self.logger.info(log_string)
 
     def log_notification_event(self, event):
-        if event.eventType == NotificationEventType.EMAIL_SENT:
-            self.logger.info("Notification email sent")
-        elif event.eventType == NotificationEventType.EMAIL_FAILURE:
-            self.logger.error("Notification email failed to send")
-        elif event.eventType == NotificationEventType.PUSHOVER_SENT:
-            self.logger.info("Pushover notification sent")
-        elif event.eventType == NotificationEventType.PUSHOVER_FAILURE:
-            self.logger.error("Pushover notification failed to send")
+        self.logger.info(event.eventMessage)
