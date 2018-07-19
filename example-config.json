@@ -16,10 +16,12 @@
     "open": false,
     "unmount": false
   },
-  "mailgun": {
-    "apiKey": "[YOUR-MAILGUN-API-KEY]",
-    "domainName": "[YOUR-MAILGUN-DOMAIN]",
-    "emailAddress": "[YOUR-EMAIL-ADDRESS]",
-    "frequencyInMinutes": 10
+  "notifications": {
+    "frequencyInMinutes": 10,
+    "mailgun": {
+      "apiKey": "[YOUR-MAILGUN-API-KEY]",
+      "domainName": "[YOUR-MAILGUN-DOMAIN]",
+      "emailAddress": "[YOUR-EMAIL-ADDRESS]"
+    }
   }
 }
