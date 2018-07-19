@@ -49,3 +49,7 @@ class Logger:
             self.logger.info("Notification email sent")
         elif event.eventType == NotificationEventType.EMAIL_FAILURE:
             self.logger.error("Notification email failed to send")
+        elif event.eventType == NotificationEventType.PUSHOVER_SENT:
+            self.logger.info("Pushover notification sent")
+        elif event.eventType == NotificationEventType.PUSHOVER_FAILURE:
+            self.logger.error("Pushover notification failed to send")
