@@ -14,6 +14,7 @@ class Notifications(threading.Thread):
 
     def run(self):
         schedule.every(self.config.mailgun_frequency).minutes.do(self.send_email)
+        schedule.every(self.config.mattermost_frequency).minutes.do(self.send_mattermost)
         while not self.stop_request.isSet():
             schedule.run_pending()
             time.sleep(1)
@@ -40,6 +41,27 @@ class Notifications(threading.Thread):
             else:
                 fail_event = notificationevent.NotificationEventType.EMAIL_FAILURE
                 self.eventQueue.put(notificationevent.NotificationEvent(fail_event))
+
+    def send_mattermost(self):
+        log_lines = ""
+        for line in reversed(open(self.config.log_file_path).readlines()):
+            if "Notification mattermost sent" not in line:
+                log_lines = line + log_lines
+            else:
+                break
+
+        if log_lines and self.config.mattermost_enabled:
+            headers = {'Content-Type': 'application/json'}
+            fullurl = self.config.mattermost_url + "/hooks/" + self.config.mattermost_api_key
+            data = '{"text": "' + log_lines + '"}'
+            post_result = requests.post(fullurl, headers=headers, data=data)
+            if post_result.status_code == 200:
+                success_event = notificationevent.NotificationEventType.MATTERMOST_SENT
+                self.eventQueue.put(notificationevent.NotificationEvent(success_event))
+            else:
+                fail_event = notificationevent.NotificationEventType.MATTERMOST_NOT_SENT
+                self.eventQueue.put(notificationevent.NotificationEvent(fail_event))
+
 
     def join(self, timeout=None):
         self.stop_request.set()
