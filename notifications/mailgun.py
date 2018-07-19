@@ -3,8 +3,7 @@ from notifications.notificationevent import NotificationEventType, NotificationE
 import requests
 
 class Mailgun(NotificationClient):
-    NOTIFICATION_LOG_MESSAGE = "Notification email sent"
-    NOTIFICATION_FAILED_LOG_MESSAGE = "Notification email failed to send"
+    NOTIFICATION_TYPE = "Mailgun"
 
     def __init__(self, config, mailgun_api_key, mailgun_domain_name, email_address):
         super().__init__(config)
@@ -13,7 +12,7 @@ class Mailgun(NotificationClient):
         self.email_address = email_address
 
     def send_notification(self):
-        log_lines = super().log_lines_since(self.NOTIFICATION_LOG_MESSAGE)
+        log_lines = super().log_lines_since_last_notification(self.NOTIFICATION_TYPE)
         if log_lines:
             return self.send_email(log_lines)
 
@@ -26,6 +25,6 @@ class Mailgun(NotificationClient):
                   "subject": "Marvin log",
                   "text": log_lines})
         if post_result.status_code == 200:
-            return NotificationEvent(NotificationEventType.EMAIL_SENT, self.NOTIFICATION_LOG_MESSAGE)
+            return NotificationEvent(NotificationEventType.EMAIL_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE)
         else:
-            return NotificationEvent(NotificationEventType.EMAIL_FAILURE, self.NOTIFICATION_FAILED_LOG_MESSAGE)
+            return NotificationEvent(NotificationEventType.EMAIL_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE)

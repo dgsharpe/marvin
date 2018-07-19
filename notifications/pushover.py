@@ -4,8 +4,7 @@ from notifications.notificationevent import NotificationEventType, NotificationE
 import http.client, urllib
 
 class Pushover(NotificationClient):
-    NOTIFICATION_LOG_MESSAGE = "Pushover notification sent"
-    NOTIFICATION_FAILED_LOG_MESSAGE = "Pushover notification failed to send"
+    NOTIFICATION_TYPE = "Pushover"
 
     def __init__(self, config, pushover_app_token, pushover_user_key):
         super().__init__(config)
@@ -13,7 +12,7 @@ class Pushover(NotificationClient):
         self.pushover_user_key = pushover_user_key
 
     def send_notification(self):
-        log_lines = super().log_lines_since(self.NOTIFICATION_LOG_MESSAGE)
+        log_lines = super().log_lines_since_last_notification(self.NOTIFICATION_TYPE)
         if log_lines:
             return self.send_pushover(log_lines)
 
@@ -26,6 +25,6 @@ class Pushover(NotificationClient):
             "message": log_lines,
           }), { "Content-type": "application/x-www-form-urlencoded" })
         if conn.getresponse().status == 200:
-            return NotificationEvent(NotificationEventType.PUSHOVER_SENT, self.NOTIFICATION_LOG_MESSAGE)
+            return NotificationEvent(NotificationEventType.PUSHOVER_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE)
         else:
-            return NotificationEvent(NotificationEventType.PUSHOVER_FAILURE, self.NOTIFICATION_FAILED_LOG_MESSAGE)
+            return NotificationEvent(NotificationEventType.PUSHOVER_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE)
