@@ -19,15 +19,20 @@
   "notifications": {
     "frequencyInMinutes": 10,
     "mailgun": {
+      "enabled": true,
       "apiKey": "[YOUR-MAILGUN-API-KEY]",
       "domainName": "[YOUR-MAILGUN-DOMAIN]",
-      "emailAddress": "[YOUR-EMAIL-ADDRESS]",
-      "enabled": true
+      "emailAddress": "[YOUR-EMAIL-ADDRESS]"
+    },
+    "mattermost": {
+      "enabled": true,
+      "mattermost_api_key": "[YOUR-MATTERMOST-API-KEY]",
+      "mattermost_url": "[YOUR-MATTERMOST-URL]"
     },
     "pushover": {
+      "enabled": true,
       "pushover_app_token": "[YOUR-PUSHOVER-APP-TOKEN]",
-      "pushover_user_key": "[YOUR-PUSHOVER-USER-KEY]",
-      "enabled": true
+      "pushover_user_key": "[YOUR-PUSHOVER-USER-KEY]"
     }
   }
 }

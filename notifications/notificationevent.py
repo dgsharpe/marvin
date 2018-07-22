@@ -6,6 +6,8 @@ class NotificationEventType(Enum):
     EMAIL_FAILURE = 2
     PUSHOVER_SENT = 3
     PUSHOVER_FAILURE = 4
+    MATTERMOST_SENT = 5
+    MATTERMOST_FAILURE = 6
 
 
 class NotificationEvent:
