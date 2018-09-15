@@ -13,6 +13,7 @@ class FileMonitor(threading.Thread):
         self.inotify = INotify()
         self.event_queue = event_queue
         self.watch_paths = config.watch_paths
+        self.excluded_paths = config.excluded_paths
         self.watch_flags = config.watch_flags
         self.recursion = config.recursion
         self.watch_descriptor_paths = {}
@@ -20,10 +21,6 @@ class FileMonitor(threading.Thread):
     def run(self):
         for path in self.watch_paths:
             self.__add_watch(path)
-            if self.recursion:
-                for root, dirs, files in os.walk(path):
-                    if root not in self.watch_descriptor_paths:
-                        self.__add_watch(root)
         while not self.stop_request.isSet():
             for event in self.inotify.read(timeout=5):
                 file_event = FileEvent(event, self.watch_descriptor_paths[event[0]])
@@ -34,12 +31,14 @@ class FileMonitor(threading.Thread):
                 self.event_queue.put(file_event)
 
     def __add_watch(self, path):
-        wd = self.inotify.add_watch(path, self.watch_flags)
-        self.watch_descriptor_paths[wd] = path
-        self.watch_descriptor_paths[path] = wd
-        for root, dirs, files in os.walk(path):
-            if root not in self.watch_descriptor_paths:
-                self.__add_watch(root)
+        if path not in self.excluded_paths:
+            wd = self.inotify.add_watch(path, self.watch_flags)
+            self.watch_descriptor_paths[wd] = path
+            self.watch_descriptor_paths[path] = wd
+            if self.recursion:
+                for root, dirs, files in os.walk(path):
+                    if root not in self.watch_descriptor_paths:
+                        self.__add_watch(root)
 
     def __rm_watch(self, path):
         try:

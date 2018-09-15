@@ -8,6 +8,7 @@ from notifications.pushover import Pushover
 class Config:
     watch_flags = 0
     watch_paths = []
+    excluded_paths = []
     notification_clients = []
 
     def __init__(self, config_file_path):
@@ -19,6 +20,9 @@ class Config:
 
             for path in config["watchPaths"]:
                 self.watch_paths.append(path)
+
+            for path in config["excludedPaths"]:
+                self.excluded_paths.append(path)
 
             for flag, value in config["watchEvents"].items():
                 if flag == "access" and value:
@@ -46,7 +50,7 @@ class Config:
                 self.notifications_frequency = config["notifications"]["frequencyInMinutes"]
                 if "mailgun" in config["notifications"]:
                     if "enabled" not in config["notifications"]["mailgun"] or config["notifications"]["mailgun"]["enabled"]:
-                        # If theres no enabled config, or if the enabled value is true
+                        # If there's no enabled config, or if the enabled value is true
                         mailgun_api_key = config["notifications"]["mailgun"]["apiKey"]
                         mailgun_domain_name = config["notifications"]["mailgun"]["domainName"]
                         email_address = config["notifications"]["mailgun"]["emailAddress"]
@@ -55,7 +59,7 @@ class Config:
 
                 if "pushover" in config["notifications"]:
                     if "enabled" not in config["notifications"]["pushover"] or config["notifications"]["pushover"]["enabled"]:
-                        # If theres no enabled config, or if the enabled value is true
+                        # If there's no enabled config, or if the enabled value is true
                         pushover_app_token = config["notifications"]["pushover"]["pushover_app_token"]
                         pushover_user_key = config["notifications"]["pushover"]["pushover_user_key"]
                         pushover_client = Pushover(self, pushover_app_token, pushover_user_key)

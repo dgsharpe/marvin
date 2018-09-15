@@ -4,6 +4,10 @@
     "/[FIRST-PATH]",
     "/[SECOND-PATH]"
   ],
+  "excludedPaths": [
+    "/[FIRST-EXCLUDED-PATH]",
+    "/[SECOND-EXCLUDED-PATH]"
+  ],
   "recursion": true,
   "watchEvents": {
     "access": false,
