@@ -1,5 +1,5 @@
 from notifications.notification_client import NotificationClient
-from notifications.notificationevent import NotificationEventType, NotificationEvent
+from notifications.notification_event import NotificationEventType, NotificationEvent
 
 import http.client, urllib
 

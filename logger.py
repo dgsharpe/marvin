@@ -7,8 +7,9 @@ from inotify_simple import flags
 class Logger:
 
     def __init__(self, config):
-        self.watchFlags = config.watch_flags
+        self.watch_flags = config.watch_flags
 
+        #Set logging formatting
         LOGGING_MSG_FORMAT = '[%(levelname)s] [%(asctime)s] : %(message)s'
         LOGGING_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
@@ -24,13 +25,15 @@ class Logger:
         handler.setFormatter(formatter)
         self.logger = logging.getLogger()
         self.logger.addHandler(handler)
+
+        #Set logging levels
         self.logger.setLevel(logging.INFO)
         logging.getLogger('schedule').setLevel(logging.WARNING)
         logging.getLogger('requests').setLevel(logging.WARNING)
         logging.getLogger('urllib3').setLevel(logging.WARNING)
 
     def log_file_event(self, file_event):
-        actionable_flags = flags.from_mask((self.watchFlags ^ flags.ISDIR ^ flags.Q_OVERFLOW) & file_event.mask)
+        actionable_flags = flags.from_mask((self.watch_flags ^ flags.ISDIR ^ flags.Q_OVERFLOW) & file_event.mask)
         if len(actionable_flags) > 0:
             log_string = ""
             for flag in actionable_flags:
@@ -44,4 +47,4 @@ class Logger:
                 self.logger.info(log_string)
 
     def log_notification_event(self, event):
-        self.logger.info(event.eventMessage)
+        self.logger.info(event.event_message)

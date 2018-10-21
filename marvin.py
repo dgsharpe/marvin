@@ -2,10 +2,10 @@ import logging
 import queue
 
 from config import Config
-from fileevent import FileEvent
-from filemonitor import FileMonitor
+from file_event import FileEvent
+from file_monitor import FileMonitor
 from logger import Logger
-from notifications.notificationevent import NotificationEvent
+from notifications.notification_event import NotificationEvent
 from notifications.notifications import Notifications
 
 if __name__ == "__main__":

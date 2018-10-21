@@ -1,14 +1,14 @@
 import schedule
 import threading
 import time
-import notifications.notificationevent
+import notifications.notification_event
 
 
 class Notifications(threading.Thread):
     def __init__(self, config, event_queue):
         super(Notifications, self).__init__()
         self.config = config
-        self.eventQueue = event_queue
+        self.event_queue = event_queue
         self.stop_request = threading.Event()
 
     def run(self):
@@ -19,7 +19,7 @@ class Notifications(threading.Thread):
 
     def check_notification(self):
         for client in self.config.notification_clients:
-            self.eventQueue.put(client.send_notification())
+            self.event_queue.put(client.send_notification())
 
     def join(self, timeout=None):
         self.stop_request.set()

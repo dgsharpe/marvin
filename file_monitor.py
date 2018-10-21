@@ -2,7 +2,7 @@ import os
 import threading
 
 from inotify_simple import INotify, flags
-from fileevent import FileEvent
+from file_event import FileEvent
 
 
 class FileMonitor(threading.Thread):

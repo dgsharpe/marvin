@@ -3,6 +3,7 @@ import json
 from inotify_simple import flags
 from notifications.mailgun import Mailgun
 from notifications.pushover import Pushover
+from notifications.local_mail import LocalMail
 
 
 class Config:
@@ -50,17 +51,19 @@ class Config:
                 self.notifications_frequency = config["notifications"]["frequencyInMinutes"]
                 if "mailgun" in config["notifications"]:
                     if "enabled" not in config["notifications"]["mailgun"] or config["notifications"]["mailgun"]["enabled"]:
-                        # If there's no enabled config, or if the enabled value is true
                         mailgun_api_key = config["notifications"]["mailgun"]["apiKey"]
                         mailgun_domain_name = config["notifications"]["mailgun"]["domainName"]
-                        email_address = config["notifications"]["mailgun"]["emailAddress"]
-                        mailgun_client = Mailgun(self, mailgun_api_key, mailgun_domain_name, email_address)
+                        mailgun_email_address = config["notifications"]["mailgun"]["emailAddress"]
+                        mailgun_client = Mailgun(self, mailgun_api_key, mailgun_domain_name, mailgun_email_address)
                         self.notification_clients.append(mailgun_client)
-
+                if "localMail" in config["notifications"]:
+                    if "enabled" not in config["notifications"]["localMail"] or config["notifications"]["localMail"]["enabled"]:
+                        local_mail_email_address = config["notifications"]["localMail"]["emailAddress"]
+                        local_mail_client = LocalMail(self, local_mail_email_address)
+                        self.notification_clients.append(local_mail_client)
                 if "pushover" in config["notifications"]:
                     if "enabled" not in config["notifications"]["pushover"] or config["notifications"]["pushover"]["enabled"]:
-                        # If there's no enabled config, or if the enabled value is true
-                        pushover_app_token = config["notifications"]["pushover"]["pushover_app_token"]
-                        pushover_user_key = config["notifications"]["pushover"]["pushover_user_key"]
+                        pushover_app_token = config["notifications"]["pushover"]["appToken"]
+                        pushover_user_key = config["notifications"]["pushover"]["userKey"]
                         pushover_client = Pushover(self, pushover_app_token, pushover_user_key)
                         self.notification_clients.append(pushover_client)

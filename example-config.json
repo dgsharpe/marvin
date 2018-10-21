@@ -22,6 +22,10 @@
   },
   "notifications": {
     "frequencyInMinutes": 10,
+    "localMail": {
+      "emailAddress": "[YOUR-EMAIL-ADDRESS]",
+      "enabled": true
+    },
     "mailgun": {
       "apiKey": "[YOUR-MAILGUN-API-KEY]",
       "domainName": "[YOUR-MAILGUN-DOMAIN]",
@@ -29,8 +33,8 @@
       "enabled": true
     },
     "pushover": {
-      "pushover_app_token": "[YOUR-PUSHOVER-APP-TOKEN]",
-      "pushover_user_key": "[YOUR-PUSHOVER-USER-KEY]",
+      "appToken": "[YOUR-PUSHOVER-APP-TOKEN]",
+      "userKey": "[YOUR-PUSHOVER-USER-KEY]",
       "enabled": true
     }
   }
