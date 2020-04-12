@@ -2,12 +2,13 @@ import logging
 import logging.handlers
 
 from inotify_simple import flags
-
+from expiringdict import ExpiringDict
 
 class Logger:
 
     def __init__(self, config):
         self.watch_flags = config.watch_flags
+        self.expiring_file_event_dict = ExpiringDict(max_len=100000, max_age_seconds=10)
 
         #Set logging formatting
         LOGGING_MSG_FORMAT = '[%(levelname)s] [%(asctime)s] : %(message)s'
@@ -44,7 +45,10 @@ class Logger:
                 self.logger.error(log_string)
                 self.logger.error("INOTIFY QUEUE OVERFLOW DETECTED - some events may not have been logged!")
             else:
-                self.logger.info(log_string)
+                # Only log this event if we haven't logged an identical event very recently
+                if self.expiring_file_event_dict.get(log_string) == None:
+                    self.expiring_file_event_dict[log_string] = True
+                    self.logger.info(log_string)
 
     def log_notification_event(self, event):
         self.logger.info(event.event_message)
