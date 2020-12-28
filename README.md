@@ -20,7 +20,7 @@ You need:
 
 1) Download this repository
    ```
-   git clone https://github.com/davidgsharpe7/marvin.git
+   git clone https://github.com/dgsharpe/marvin.git
    ```
 2) Rename example-config.json to config.json and edit it to your preferences.
 3) Install the required libraries with pip. On Ubuntu, `sudo python3 -m pip install -r requirements.txt`
