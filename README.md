@@ -45,14 +45,7 @@ Create a file at `/etc/systemd/system/marvin.service` like this, changing the va
 ```
 Then run `sudo systemctl daemon-reload && sudo systemctl enable marvin.service && sudo systemctl start marvin.service`
 
-5) If your distribution does not use systemd, you can run Marvin in the background with the 'screen' utility, as in:
-   ```
-   screen python3 marvin.py
-   ```
-Furthermore, you can set Marvin to run via screen at system boot, using cron. Edit your crontab with `crontab -e` and add a line like this (changing the paths to Marvin, screen, and python3 as needed):
-   ```
-   @reboot sleep 5; cd /path/to/marvin/; /usr/bin/screen -dm /usr/bin/python3 marvin.py
-   ```
+5) If your distribution does not use systemd, you can run Marvin in the background with the 'screen' utility, as in, `screen python3 marvin.py`. Furthermore, you can set Marvin to run via screen at system boot, using cron. Edit your crontab with `crontab -e` and add a line like this (changing the paths to Marvin, screen, and python3 as needed): `@reboot sleep 5; cd /path/to/marvin/; /usr/bin/screen -dm /usr/bin/python3 marvin.py`
 
 ## Set up notifications (optional)
 
