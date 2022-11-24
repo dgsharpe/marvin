@@ -6,7 +6,6 @@ from file_event import FileEvent
 
 
 class FileMonitor(threading.Thread):
-
     def __init__(self, config, event_queue):
         super(FileMonitor, self).__init__()
         self.stop_request = threading.Event()
@@ -46,7 +45,7 @@ class FileMonitor(threading.Thread):
             del self.watch_descriptor_paths[path]
             del self.watch_descriptor_paths[wd]
         except KeyError:
-            if not path.endswith('/'):
+            if not path.endswith("/"):
                 path = path + "/"
                 wd = self.watch_descriptor_paths[path]
                 del self.watch_descriptor_paths[path]

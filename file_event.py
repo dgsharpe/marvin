@@ -2,7 +2,6 @@ from inotify_simple import flags
 
 
 class FileEvent:
-
     def __init__(self, event, path):
         self.event = event
         self.wd = event[0]

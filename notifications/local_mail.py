@@ -2,6 +2,7 @@ from notifications.notification_client import NotificationClient
 from notifications.notification_event import NotificationEventType, NotificationEvent
 import subprocess
 
+
 class LocalMail(NotificationClient):
     NOTIFICATION_TYPE = "Local mail"
 
@@ -16,11 +17,19 @@ class LocalMail(NotificationClient):
 
     def send_email(self, log_lines):
         try:
-            process = subprocess.Popen(['mail', '-s', "Marvin log", self.email_address], stdin=subprocess.PIPE)
-            process.communicate(log_lines.encode('utf-8'), 60)
+            process = subprocess.Popen(["mail", "-s", "Marvin log", self.email_address], stdin=subprocess.PIPE)
+            process.communicate(log_lines.encode("utf-8"), 60)
             if process.returncode == 0:
-                return NotificationEvent(NotificationEventType.LOCAL_MAIL_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE)
+                return NotificationEvent(
+                    NotificationEventType.LOCAL_MAIL_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE
+                )
             else:
-                return NotificationEvent(NotificationEventType.LOCAL_MAIL_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE)
+                return NotificationEvent(
+                    NotificationEventType.LOCAL_MAIL_FAILURE,
+                    super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE,
+                )
         except Exception as e:
-            return NotificationEvent(NotificationEventType.LOCAL_MAIL_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE)
+            return NotificationEvent(
+                NotificationEventType.LOCAL_MAIL_FAILURE,
+                super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE,
+            )

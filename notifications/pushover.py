@@ -3,6 +3,7 @@ from notifications.notification_event import NotificationEventType, Notification
 
 import http.client, urllib
 
+
 class Pushover(NotificationClient):
     NOTIFICATION_TYPE = "Pushover"
 
@@ -18,13 +19,23 @@ class Pushover(NotificationClient):
 
     def send_pushover(self, log_lines):
         conn = http.client.HTTPSConnection("api.pushover.net:443")
-        conn.request("POST", "/1/messages.json",
-          urllib.parse.urlencode({
-            "token": self.pushover_app_token,
-            "user": self.pushover_user_key,
-            "message": log_lines,
-          }), { "Content-type": "application/x-www-form-urlencoded" })
+        conn.request(
+            "POST",
+            "/1/messages.json",
+            urllib.parse.urlencode(
+                {
+                    "token": self.pushover_app_token,
+                    "user": self.pushover_user_key,
+                    "message": log_lines,
+                }
+            ),
+            {"Content-type": "application/x-www-form-urlencoded"},
+        )
         if conn.getresponse().status == 200:
-            return NotificationEvent(NotificationEventType.PUSHOVER_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE)
+            return NotificationEvent(
+                NotificationEventType.PUSHOVER_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE
+            )
         else:
-            return NotificationEvent(NotificationEventType.PUSHOVER_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE)
+            return NotificationEvent(
+                NotificationEventType.PUSHOVER_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE
+            )

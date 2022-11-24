@@ -10,7 +10,7 @@ from notifications.notifications import Notifications
 
 if __name__ == "__main__":
 
-    config = Config('config.json')
+    config = Config("config.json")
     logger = Logger(config)
 
     file_event_queue = queue.Queue()

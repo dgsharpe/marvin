@@ -2,6 +2,7 @@ from notifications.notification_client import NotificationClient
 from notifications.notification_event import NotificationEventType, NotificationEvent
 import requests
 
+
 class Mailgun(NotificationClient):
     NOTIFICATION_TYPE = "Mailgun"
 
@@ -20,11 +21,18 @@ class Mailgun(NotificationClient):
         post_result = requests.post(
             "https://api.mailgun.net/v3/" + self.mailgun_domain_name + "/messages",
             auth=("api", self.mailgun_api_key),
-            data={"from": "Marvin <mailgun@" + self.mailgun_domain_name + ">",
-                  "to": [self.email_address],
-                  "subject": "Marvin log",
-                  "text": log_lines})
+            data={
+                "from": "Marvin <mailgun@" + self.mailgun_domain_name + ">",
+                "to": [self.email_address],
+                "subject": "Marvin log",
+                "text": log_lines,
+            },
+        )
         if post_result.status_code == 200:
-            return NotificationEvent(NotificationEventType.MAILGUN_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE)
+            return NotificationEvent(
+                NotificationEventType.MAILGUN_SENT, super().NOTIFICATION_LOG_MESSAGE + self.NOTIFICATION_TYPE
+            )
         else:
-            return NotificationEvent(NotificationEventType.MAILGUN_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE)
+            return NotificationEvent(
+                NotificationEventType.MAILGUN_FAILURE, super().NOTIFICATION_FAILED_LOG_MESSAGE + self.NOTIFICATION_TYPE
+            )

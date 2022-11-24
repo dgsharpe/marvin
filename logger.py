@@ -4,34 +4,31 @@ import logging.handlers
 from inotify_simple import flags
 from expiringdict import ExpiringDict
 
-class Logger:
 
+class Logger:
     def __init__(self, config):
         self.watch_flags = config.watch_flags
         self.expiring_file_event_dict = ExpiringDict(max_len=100000, max_age_seconds=10)
 
-        #Set logging formatting
-        LOGGING_MSG_FORMAT = '[%(levelname)s] [%(asctime)s] : %(message)s'
-        LOGGING_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+        # Set logging formatting
+        LOGGING_MSG_FORMAT = "[%(levelname)s] [%(asctime)s] : %(message)s"
+        LOGGING_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format=LOGGING_MSG_FORMAT,
-            datefmt=LOGGING_DATE_FORMAT
-        )
+        logging.basicConfig(level=logging.DEBUG, format=LOGGING_MSG_FORMAT, datefmt=LOGGING_DATE_FORMAT)
 
         formatter = logging.Formatter(LOGGING_MSG_FORMAT)
-        handler = logging.handlers.TimedRotatingFileHandler(filename=config.log_file_path, when="d", interval=1,
-                                                            backupCount=7)
+        handler = logging.handlers.TimedRotatingFileHandler(
+            filename=config.log_file_path, when="d", interval=1, backupCount=7
+        )
         handler.setFormatter(formatter)
         self.logger = logging.getLogger()
         self.logger.addHandler(handler)
 
-        #Set logging levels
+        # Set logging levels
         self.logger.setLevel(logging.INFO)
-        logging.getLogger('schedule').setLevel(logging.WARNING)
-        logging.getLogger('requests').setLevel(logging.WARNING)
-        logging.getLogger('urllib3').setLevel(logging.WARNING)
+        logging.getLogger("schedule").setLevel(logging.WARNING)
+        logging.getLogger("requests").setLevel(logging.WARNING)
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
 
     def log_file_event(self, file_event):
         actionable_flags = flags.from_mask((self.watch_flags ^ flags.ISDIR ^ flags.Q_OVERFLOW) & file_event.mask)

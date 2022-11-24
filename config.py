@@ -14,7 +14,7 @@ class Config:
 
     def __init__(self, config_file_path):
         self.config_file_path = config_file_path
-        with open(config_file_path, 'r') as f:
+        with open(config_file_path, "r") as f:
             config = json.load(f)
 
             self.log_file_path = config["logFilePath"]
@@ -50,19 +50,28 @@ class Config:
             if "notifications" in config:
                 self.notifications_frequency = config["notifications"]["frequencyInMinutes"]
                 if "mailgun" in config["notifications"]:
-                    if "enabled" not in config["notifications"]["mailgun"] or config["notifications"]["mailgun"]["enabled"]:
+                    if (
+                        "enabled" not in config["notifications"]["mailgun"]
+                        or config["notifications"]["mailgun"]["enabled"]
+                    ):
                         mailgun_api_key = config["notifications"]["mailgun"]["apiKey"]
                         mailgun_domain_name = config["notifications"]["mailgun"]["domainName"]
                         mailgun_email_address = config["notifications"]["mailgun"]["emailAddress"]
                         mailgun_client = Mailgun(self, mailgun_api_key, mailgun_domain_name, mailgun_email_address)
                         self.notification_clients.append(mailgun_client)
                 if "localMail" in config["notifications"]:
-                    if "enabled" not in config["notifications"]["localMail"] or config["notifications"]["localMail"]["enabled"]:
+                    if (
+                        "enabled" not in config["notifications"]["localMail"]
+                        or config["notifications"]["localMail"]["enabled"]
+                    ):
                         local_mail_email_address = config["notifications"]["localMail"]["emailAddress"]
                         local_mail_client = LocalMail(self, local_mail_email_address)
                         self.notification_clients.append(local_mail_client)
                 if "pushover" in config["notifications"]:
-                    if "enabled" not in config["notifications"]["pushover"] or config["notifications"]["pushover"]["enabled"]:
+                    if (
+                        "enabled" not in config["notifications"]["pushover"]
+                        or config["notifications"]["pushover"]["enabled"]
+                    ):
                         pushover_app_token = config["notifications"]["pushover"]["appToken"]
                         pushover_user_key = config["notifications"]["pushover"]["userKey"]
                         pushover_client = Pushover(self, pushover_app_token, pushover_user_key)
