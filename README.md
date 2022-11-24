@@ -1,17 +1,17 @@
 # Marvin (the paranoid file monitor)
 
-Marvin monitors your files. When files or directories of your choosing are created, deleted, changed, moved, or renamed, Marvin logs it. Marvin can also send notifications about changes to files using email or [Pushover][po].
+Marvin monitors your files. When files or directories are created, deleted, changed, moved, or renamed, Marvin logs it. Marvin can also send notifications using email or [Pushover][po].
 
 ## Who is this for?
 
-Marvin is for people who care about the integrity of their files. Your files can change without your knowledge due to mistakes, viruses, buggy applications, other users, and more. Backups and snapshots are great, but if you don't notice changes in time, your backups will be overwritten with the changed file versions. With Marvin, changes will be logged, and you can be notified about them in near-real time.
+Marvin is for people who never want to lose valuable data. Your files can change without your knowledge due to mistakes, viruses, buggy applications, other users' actions, and more. Backups and snapshots are great, but they only help if you notice that your files were changed *before* it's too late. If you don't, your backups will eventually be overwritten with the changed file versions. Marvin solves the problem by logging changes and notifying you about them in near real-time.
 
 ## Prerequisites
 
 You need:
 
 1) A Linux machine
-2) Python 3.x and pip (on Ubuntu, `sudo apt install python3-pip`)
+2) Python 3.x and pip (on Ubuntu-like distros, `sudo apt install python3-pip`)
 3) (optional) An email account from which to send notifications, if you want to send yourself email notifications
 4) (optional) A free [Mailgun][mg] account and API key, if you want to send email notifications through Mailgun
 5) (optional) A free [Pushover][po] user and app token, if you want push notifications via Pushover
@@ -24,11 +24,32 @@ You need:
    ```
 2) Rename example-config.json to config.json and edit it to your preferences.
 3) Install the required libraries with pip. On Ubuntu, `sudo python3 -m pip install -r requirements.txt`
-4) Run the application and leave it running. I prefer to run it in the background with 'screen', as in:
+4) If your distribution uses systemd (as Ubuntu and most other popular distributions do), then do the following to run Marvin as a background service: 
+
+Create a file at `/etc/systemd/system/marvin.service` like this, changing the values as appropriate:
+```
+    [Install]
+    WantedBy=multi-user.target
+    
+    [Unit]
+    Description=Marvin - The Paranoid File Monitor
+    After=local-fs.target
+    
+    [Service]
+    Type=simple
+    User=root
+    Group=root
+    WorkingDirectory=/path/to/marvin/directory/
+    ExecStart=/usr/bin/python3 /path/to/marvin/directory/marvin.py
+    Restart=always
+```
+Then run `sudo systemctl daemon-reload && sudo systemctl enable marvin.service && sudo systemctl start marvin.service`
+
+5) If your distribution does not use systemd, you can run Marvin in the background with the 'screen' utility, as in:
    ```
    screen python3 marvin.py
    ```
-5) (optional) Set Marvin to run at system boot. Edit your crontab with `crontab -e` and add a line like this:
+Furthermore, you can set Marvin to run via screen at system boot, using cron. Edit your crontab with `crontab -e` and add a line like this (changing the paths to Marvin, screen, and python3 as needed):
    ```
    @reboot sleep 5; cd /path/to/marvin/; /usr/bin/screen -dm /usr/bin/python3 marvin.py
    ```
@@ -41,7 +62,7 @@ Notifications can be configured in the `config.json` file. You can have Marvin e
 
 This section will guide you through setting up your computer for sending emails from an email account of your choice. These instructions are tested on Ubuntu, but will be similar for other distributions. If you've already configured a mail transfer agent, you can skip to step 5. 
 
-For security reasons, it is recommended that you create a secondary email address and use its credentials in the instructions below. **If you're sending from a Gmail account**, Gmail may require you to configure an [app-specific password][gmail-asp] or [enable less-secure apps][gmail-lsa] on that account.
+**If you're sending from a Gmail account**, Gmail may require you to configure an [app-specific password][gmail-asp] or [enable less-secure apps][gmail-lsa] on that account. If you're highly security-conscious, create a burner account for use with Marvin.
 
 1) Install ssmtp with `sudo apt install ssmtp`
 2) Edit the config file: `sudo nano /etc/ssmtp/ssmtp.conf`
