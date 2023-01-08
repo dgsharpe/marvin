@@ -13,9 +13,13 @@ class NotificationClient:
         log_file_directory = self.config.log_file_path.rsplit("/", 1)[0]
         log_file_name = self.config.log_file_path.rsplit("/", 1)[1]
         log_files = [self.config.log_file_path] + sorted(
-            [file for file in os.listdir(log_file_directory) if log_file_name in file and log_file_name != file], reverse=True
+            [
+                f"{log_file_directory}/{file}"
+                for file in os.listdir(log_file_directory)
+                if log_file_name in file and log_file_name != file
+            ],
+            reverse=True,
         )
-
         log_lines = ""
         last_notification_send_found = False
 
