@@ -1,6 +1,4 @@
-import schedule
 import threading
-import time
 import notifications.notification_event
 
 
@@ -12,10 +10,9 @@ class Notifications(threading.Thread):
         self.stop_request = threading.Event()
 
     def run(self):
-        schedule.every(self.config.notifications_frequency).minutes.do(self.check_notification)
-        while not self.stop_request.isSet():
-            schedule.run_pending()
-            time.sleep(1)
+        interval_seconds = self.config.notifications_frequency * 60
+        while not self.stop_request.wait(interval_seconds):
+            self.check_notification()
 
     def check_notification(self):
         for client in self.config.notification_clients:

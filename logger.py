@@ -8,7 +8,7 @@ from expiringdict import ExpiringDict
 class Logger:
     def __init__(self, config):
         self.watch_flags = config.watch_flags
-        self.expiring_file_event_dict = ExpiringDict(max_len=100000, max_age_seconds=10)
+        self.expiring_file_event_dict = ExpiringDict(max_len=100000, max_age_seconds=config.dedupe_window_seconds)
 
         # Set logging formatting
         LOGGING_MSG_FORMAT = "[%(levelname)s] [%(asctime)s] : %(message)s"
@@ -26,18 +26,13 @@ class Logger:
 
         # Set logging levels
         self.logger.setLevel(logging.INFO)
-        logging.getLogger("schedule").setLevel(logging.WARNING)
         logging.getLogger("requests").setLevel(logging.WARNING)
         logging.getLogger("urllib3").setLevel(logging.WARNING)
 
     def log_file_event(self, file_event):
         actionable_flags = flags.from_mask((self.watch_flags ^ flags.ISDIR ^ flags.Q_OVERFLOW) & file_event.mask)
         if len(actionable_flags) > 0:
-            log_string = ""
-            for flag in actionable_flags:
-                log_string += str(flag)[6:] + ", "
-            log_string = log_string[:-2]
-            log_string += " " + file_event.full_path
+            log_string = ", ".join(flag.name for flag in actionable_flags) + " " + file_event.full_path
             if flags.Q_OVERFLOW & file_event.mask:
                 self.logger.error(log_string)
                 self.logger.error("INOTIFY QUEUE OVERFLOW DETECTED - some events may not have been logged!")

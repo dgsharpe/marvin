@@ -18,6 +18,7 @@ class Config:
             config = json.load(f)
 
             self.log_file_path = config["logFilePath"]
+            self.dedupe_window_seconds = config.get("dedupeWindowSeconds", 60)
 
             for path in config["watchPaths"]:
                 self.watch_paths.append(path)
@@ -49,6 +50,8 @@ class Config:
 
             if "notifications" in config:
                 self.notifications_frequency = config["notifications"]["frequencyInMinutes"]
+                self.notifications_max_lines = config["notifications"].get("maxLines", 1000)
+                self.notifications_max_bytes = config["notifications"].get("maxBytes", 262144)
                 if "mailgun" in config["notifications"]:
                     if (
                         "enabled" not in config["notifications"]["mailgun"]

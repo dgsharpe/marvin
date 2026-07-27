@@ -1,5 +1,30 @@
 import os
 
+TRUNCATION_NOTICE = "... truncated: earlier lines omitted because the notification size cap was reached\n"
+
+
+def read_lines_reverse(file_path, chunk_size=8192):
+    with open(file_path, "rb") as f:
+        f.seek(0, os.SEEK_END)
+        remaining = f.tell()
+        read_any = False
+        trailer = b""
+        while remaining > 0:
+            read_size = min(chunk_size, remaining)
+            remaining -= read_size
+            f.seek(remaining)
+            lines = (f.read(read_size) + trailer).split(b"\n")
+            trailer = lines.pop(0)
+            if not read_any:
+                read_any = True
+                # A file ending in a newline splits to a final empty element
+                if lines and lines[-1] == b"":
+                    lines.pop()
+            for line in reversed(lines):
+                yield line.decode("utf-8", "replace") + "\n"
+        if read_any:
+            yield trailer.decode("utf-8", "replace") + "\n"
+
 
 class NotificationClient:
     NOTIFICATION_LOG_MESSAGE = "Notification sent: "
@@ -10,37 +35,48 @@ class NotificationClient:
 
     def log_lines_since_last_notification(self, client_type):
         # Get a list of the log files which exist, sorted from most recent to least recent.
-        log_file_directory = self.config.log_file_path.rsplit("/", 1)[0]
-        log_file_name = self.config.log_file_path.rsplit("/", 1)[1]
+        log_file_directory = os.path.dirname(self.config.log_file_path) or "."
+        log_file_name = os.path.basename(self.config.log_file_path)
         log_files = [self.config.log_file_path] + sorted(
             [
-                f"{log_file_directory}/{file}"
+                os.path.join(log_file_directory, file)
                 for file in os.listdir(log_file_directory)
                 if log_file_name in file and log_file_name != file
             ],
             reverse=True,
         )
-        log_lines = ""
-        last_notification_send_found = False
+        log_lines = []
+        log_bytes = 0
+        truncated = False
+        finished = False
 
-        # Iterate through the lines in the log files, stopping when we see the most recent notification send
+        # Iterate backwards through the lines in the log files, stopping when we see the most
+        # recent notification send or when the configured size caps are reached.
         for log_file in log_files:
-            for line in reversed(open(log_file).readlines()):
-                if self.NOTIFICATION_LOG_MESSAGE not in line:
-                    # If the line isn't for sending a notification
-                    log_lines = line + log_lines
-                elif client_type not in line:
-                    # If this log line is about a notification, but pertains
-                    # to a different notification client than the current one,
-                    # omit the line and continue.
-                    pass
-                else:
-                    last_notification_send_found = True
-                    break
-            if last_notification_send_found:
+            if finished:
                 break
+            for line in read_lines_reverse(log_file):
+                if self.NOTIFICATION_LOG_MESSAGE in line:
+                    if client_type in line:
+                        finished = True
+                        break
+                    # This line is about a notification, but pertains to a different
+                    # notification client than the current one, so omit it and continue.
+                    continue
+                if (
+                    len(log_lines) >= self.config.notifications_max_lines
+                    or log_bytes + len(line) > self.config.notifications_max_bytes
+                ):
+                    truncated = True
+                    finished = True
+                    break
+                log_lines.append(line)
+                log_bytes += len(line)
 
-        return log_lines
+        if truncated:
+            log_lines.append(TRUNCATION_NOTICE)
+
+        return "".join(reversed(log_lines))
 
     def send_notification(self):
         raise Exception(

@@ -11,7 +11,7 @@ Marvin is for people who never want to lose valuable data. Your files can change
 You need:
 
 1) A Linux machine
-2) Python 3.x and pip (on Ubuntu-like distros, `sudo apt install python3-pip`)
+2) Python 3.11 or newer, and the venv module (on Ubuntu-like distros, `sudo apt install python3-venv`)
 3) (optional) An email account from which to send notifications, if you want to send yourself email notifications
 4) (optional) A free [Mailgun][mg] account and API key, if you want to send email notifications through Mailgun
 5) (optional) A free [Pushover][po] user and app token, if you want push notifications via Pushover
@@ -20,10 +20,14 @@ You need:
 
 1) Download this repository
    ```
-   git clone https://github.com/dgsharpe/marvin.git
+   sudo git clone https://github.com/dgsharpe/marvin.git /opt/marvin
    ```
-2) Rename example-config.json to config.json and edit it to your preferences.
-3) Install the required libraries with pip. On Ubuntu, `sudo python3 -m pip install -r requirements.txt`
+2) Rename example-config.json to config.json and edit it to your preferences. It can hold API keys and passwords, so restrict it with `sudo chmod 600 /opt/marvin/config.json`
+3) Install the required libraries into a virtual environment:
+   ```
+   sudo python3 -m venv /opt/marvin/.venv
+   sudo /opt/marvin/.venv/bin/pip install -r /opt/marvin/requirements.txt
+   ```
 4) If your distribution uses systemd (as Ubuntu and most other popular distributions do), then do the following to run Marvin as a background service: 
 
 Create a file at `/etc/systemd/system/marvin.service` like this, changing the values as appropriate:
@@ -39,13 +43,18 @@ Create a file at `/etc/systemd/system/marvin.service` like this, changing the va
     Type=simple
     User=root
     Group=root
-    WorkingDirectory=/path/to/marvin/directory/
-    ExecStart=/usr/bin/python3 /path/to/marvin/directory/marvin.py
+    WorkingDirectory=/opt/marvin/
+    ExecStart=/opt/marvin/.venv/bin/python /opt/marvin/marvin.py
     Restart=always
+    RestartSec=5
 ```
 Then run `sudo systemctl daemon-reload && sudo systemctl enable marvin.service && sudo systemctl start marvin.service`
 
-5) If your distribution does not use systemd, you can run Marvin in the background with the 'screen' utility, as in, `screen python3 marvin.py`. Furthermore, you can set Marvin to run via screen at system boot, using cron. Edit your crontab with `crontab -e` and add a line like this (changing the paths to Marvin, screen, and python3 as needed): `@reboot sleep 5; cd /path/to/marvin/; /usr/bin/screen -dm /usr/bin/python3 marvin.py`
+If Marvin detects that one of its own threads has died, it logs the reason and exits so that systemd restarts it. Should the underlying fault be permanent (ex. a watch path that never exists) systemd gives up after a few attempts and marks the unit `failed`, so check `systemctl status marvin.service` if notifications stop arriving.
+
+5) If your distribution does not use systemd, you can run Marvin in the background with the 'screen' utility, as in, `screen /opt/marvin/.venv/bin/python marvin.py`. Furthermore, you can set Marvin to run via screen at system boot, using cron. Edit your crontab with `crontab -e` and add a line like this (changing the paths to Marvin and screen as needed): `@reboot sleep 5; cd /opt/marvin/; /usr/bin/screen -dm /opt/marvin/.venv/bin/python marvin.py`
+
+6) If you are watching a large directory tree with `recursion` enabled, Marvin needs one kernel watch per directory. The default limit is low (8192 on smaller machines), and exceeding it stops Marvin from watching further directories. Check yours with `cat /proc/sys/fs/inotify/max_user_watches`, and raise it if needed by adding `fs.inotify.max_user_watches=524288` to `/etc/sysctl.conf` and running `sudo sysctl -p`
 
 ## Set up notifications (optional)
 
@@ -53,25 +62,35 @@ Notifications can be configured in the `config.json` file. You can have Marvin e
 
 #### Set up email notifications locally (recommended)
 
-This section will guide you through setting up your computer for sending emails from an email account of your choice. These instructions are tested on Ubuntu, but will be similar for other distributions. If you've already configured a mail transfer agent, you can skip to step 5. 
+This section will guide you through setting up your computer for sending emails from an email account of your choice. These instructions are tested on Debian and Ubuntu, but will be similar for other distributions. Marvin sends local mail by piping to the `mail` command, which needs both a mail user agent and a mail transfer agent (MTA). You might need to install one or both.
 
-**If you're sending from a Gmail account**, Gmail may require you to configure an [app-specific password][gmail-asp] or [enable less-secure apps][gmail-lsa] on that account. If you're highly security-conscious, create a burner account for use with Marvin.
+**If you are running Proxmox VE, do not install ssmtp or msmtp-mta.** Proxmox already installs Postfix and sends its own notifications through it. Every MTA package declares `Conflicts: mail-transport-agent`, so installing a second one removes Postfix and breaks Proxmox notifications. Skip to step 4 — Postfix already satisfies everything Marvin needs.
 
-1) Install ssmtp with `sudo apt install ssmtp`
-2) Edit the config file: `sudo nano /etc/ssmtp/ssmtp.conf`
-3) Copy-paste the following, but **replace the values with parameters from your email provider and account**. The example values here are from Gmail:
+**If you're sending from a Gmail account**, Gmail requires an [app-specific password][gmail-asp], which in turn requires 2-Step Verification to be enabled on the account.
+
+1) If you already have an MTA such as Postfix or Exim configured, skip to step 4.
+2) Install msmtp as a relay-only MTA with `sudo apt install msmtp msmtp-mta`.
+3) Edit the config file: `sudo nano /etc/msmtprc`, then restrict it with `sudo chmod 600 /etc/msmtprc`. Copy-paste the following, but **replace the values with parameters from your email provider and account**. The example values here are from Gmail:
    ```
-   mailhub=smtp.gmail.com:587
-   UseSTARTTLS=YES
-   FromLineOverride=YES
-   AuthUser=disposable-email-account@gmail.com
-   AuthPass=disposable-email-account-password
+   defaults
+   auth           on
+   tls            on
+   tls_trust_file /etc/ssl/certs/ca-certificates.crt
+   logfile        /var/log/msmtp.log
+
+   account        default
+   host           smtp.gmail.com
+   port           587
+   from           disposable-email-account@gmail.com
+   user           disposable-email-account@gmail.com
+   password       disposable-email-account-app-password
    ```
-4) Run a test to make sure everything is working: 
+4) Install the `mail` command with `sudo apt install bsd-mailx`
+5) Run a test to make sure everything is working: 
     ```
     echo "hello world" | mail -s "Test Email" your-recipient-email-address@somewebsite.com
     ```
-5) In your Marvin `config.json` file, enable the localMail notifier, and set the recipient email address.
+6) In your Marvin `config.json` file, enable the localMail notifier, and set the recipient email address.
 
 #### Set up Mailgun for email notifications
 
@@ -103,4 +122,3 @@ Donate via Bitcoin, 1KZGrTNjtthNEsf8fruWiMHiKD3zdm3hGY
 [po]: https://pushover.net
 [mg]: https://www.mailgun.com
 [gmail-asp]: https://support.google.com/accounts/answer/185833?hl=en
-[gmail-lsa]: https://support.google.com/accounts/answer/6010255?hl=en

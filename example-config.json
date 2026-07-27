@@ -9,6 +9,7 @@
     "/[SECOND-EXCLUDED-PATH]"
   ],
   "recursion": true,
+  "dedupeWindowSeconds": 60,
   "watchEvents": {
     "access": false,
     "attrib": false,
@@ -22,6 +23,8 @@
   },
   "notifications": {
     "frequencyInMinutes": 10,
+    "maxLines": 1000,
+    "maxBytes": 262144,
     "localMail": {
       "emailAddress": "[YOUR-EMAIL-ADDRESS]",
       "enabled": true
